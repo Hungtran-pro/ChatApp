@@ -1,0 +1,31 @@
+*{
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#register-form {
+    padding: 100px;
+    width: 40vw;
+    background-color: #CECECE;
+    border-radius: 10px;
+    margin: auto;
+}
+
+#register-form > h2 {
+    text-align: center;
+    margin: 40px 0px;
+}
+
+#register-btn{
+    font-size: 15px;
+    color: white;
+    width: 100%;
+    height: 40px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background: linear-gradient(to right, #A1AbF3, #74E8D3);
+}
+
+#to-login {
+    margin-top: 20px;
+    text-align: center;
+}
