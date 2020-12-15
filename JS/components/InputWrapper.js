@@ -45,6 +45,20 @@ export default class inputWrapper extends HTMLElement {
     return this.$main.value;
   }
 
+  error(message) {
+    this.setAttribute("error", message);
+  }
+
+  static validate($inputWrapper, condition, message) {
+    let value = $inputWrapper.value();
+    if (condition(value)) {
+      $inputWrapper.error('');
+      return true;
+    } else {
+      $inputWrapper.error(message);
+      return false;
+    }
+  }
 }
 
 window.customElements.define("input-wrapper", inputWrapper);

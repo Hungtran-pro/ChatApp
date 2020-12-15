@@ -1,15 +1,18 @@
+import inputWrapper from "./InputWrapper.js";
+import { validateEmail } from "../components/utils.js";
+
 const $template = document.createElement("template");
-$template.innerHTML = /*html*/`   
+$template.innerHTML = /*html*/ `
     <link rel="stylesheet" href="./CSS/register-form.css"> 
     <form id="register-form" action="">
         <h2>Register here</h2>
         <input-wrapper id="email" label="Email" type="email" error="" value=""></input-wrapper>
         <input-wrapper id="name" label="Name" type="text" error="" value=""></input-wrapper>
-        <input-wrapper id="password" label="Password" type="email" error="" value=""></input-wrapper>
-        <input-wrapper id="password-confirmation" label="Re-password" type="email" error="" value=""></input-wrapper>
+        <input-wrapper id="password" label="Password" type="password" error="" value=""></input-wrapper>
+        <input-wrapper id="password-confirmation" label="Re-password" type="password" error="" value=""></input-wrapper>
         <button id="register-btn">Đăng kí</button>
 
-        <div id="to-login">Bạn đã có tài khoản<b><a href="#">Sign in</a></b></div>
+        <div id="to-login">Bạn đã có tài khoản <b><a href="#">Sign in</a></b></div>
 
     </form>
 `;
@@ -23,15 +26,82 @@ export default class RegisterForm extends HTMLElement {
     this.$email = this.shadowRoot.getElementById("email");
     this.$name = this.shadowRoot.getElementById("name");
     this.$password = this.shadowRoot.getElementById("password");
-    this.$passwordConfirmation = this.shadowRoot.getElementById("password-confirmation");
+    this.$passwordConfirmation = this.shadowRoot.getElementById(
+      "password-confirmation"
+    );
   }
 
-  connectedCallback(){
-      this.$form.onsubmit = (event) => {
-          event.preventDefault();
-          console.log('đăng kí');
-          console.log(this.$email.value());
+  connectedCallback() {
+    this.$form.onsubmit = async (event) => {
+      event.preventDefault();
+      console.log("đăng kí");
+      let email = this.$email.value();
+      let name = this.$name.value();
+      let password = this.$password.value();
+      let passwordConfirmation = this.$passwordConfirmation.value();
+
+      // if(email == ''){
+      //   this.$email.error('Email is required')
+      // }
+      // else{
+      //   this.$email.error('');
+      // }
+
+      let isPassed =
+        (inputWrapper.validate(
+          this.$email,
+          (value) => {
+            return value != "";
+          },
+          "Email is required"
+        ) &&
+          inputWrapper.validate(
+            this.$email,
+            (value) => validateEmail(value),
+            "Email is wrong!"
+          )) &
+        inputWrapper.validate(
+          this.$name,
+          (value) => value != "",
+          "Name is required"
+        ) &
+        inputWrapper.validate(
+          this.$password,
+          (value) => value != "",
+          "Password is required"
+        ) &
+        (inputWrapper.validate(
+          this.$passwordConfirmation,
+          (value) => value != "",
+          "Re-Password is required"
+        ) &&
+          inputWrapper.validate(
+            this.$passwordConfirmation,
+            (value) => value == password,
+            "Re-Password is not correct!"
+          ));
+      //* console.log(isPassed); Kiểm tra thỏa mãn tất cả điều kiện
+      if (isPassed) {
+        let result = await firebase
+          .firestore()
+          .collection("users")
+          .where("email", "==", email)
+          .get();
+        console.log(result);
+        if (result.empty) {
+          firebase
+            .firestore()
+            .collection("users")
+            .add({
+              name: name,
+              email: email,
+              password: CryptoJS.MD5(password).toString(),
+            });
+        } else {
+          this.$email.error("Email has been used!");
+        }
       }
+    };
   }
 }
 

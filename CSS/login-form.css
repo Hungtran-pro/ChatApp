@@ -2,21 +2,22 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
-#register-form {
+#login-form {
     padding: 50px 100px;
-    width: 30vw;
+    width: 20vw;
     background-color: #ffffff;
     border-radius: 10px;
     margin: auto;
     /* border: 1px #A4BF9D solid; */
 }
 
-#register-form>h2 {
+#login-form > h2 {
+    font-size: 40px;
     text-align: center;
     margin: 30px 0px;
 }
 
-#register-btn {
+#login-btn {
     font-size: 18px;
     color: white;
     width: 100%;
