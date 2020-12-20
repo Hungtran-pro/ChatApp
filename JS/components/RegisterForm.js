@@ -12,7 +12,7 @@ $template.innerHTML = /*html*/ `
         <input-wrapper id="password-confirmation" label="Re-password" type="password" error="" value=""></input-wrapper>
         <button id="register-btn">Đăng kí</button>
 
-        <div id="to-login">Bạn đã có tài khoản <b><a href="#">Sign in</a></b></div>
+        <div id="to-login">Bạn đã có tài khoản <b><a href="#!/sign-in">Sign in</a></b></div>
 
     </form>
 `;

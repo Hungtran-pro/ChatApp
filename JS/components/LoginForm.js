@@ -5,12 +5,11 @@ const $template = document.createElement("template");
 $template.innerHTML = /*html*/ `
     <link rel="stylesheet" href="./CSS/login-form.css"> 
     <form id="login-form" action="">
-        <h2>Log in here</h2>
+        <h2>Log in</h2>
         <input-wrapper id="email" label="Email" type="email" error="" value=""></input-wrapper>
         <input-wrapper id="password" label="Password" type="password" error="" value=""></input-wrapper>
         <button id="login-btn">Log in</button>
-
-        <div id="to-register">Bạn chưa có tài khoản <b><a href="#">Sign up</a></b></div>
+        <div id="to-register">Bạn chưa có tài khoản <b><a href="#!/sign-up">Sign up</a></b></div>
     </form>
 `;
 
@@ -53,7 +52,7 @@ export default class LoginForm extends HTMLElement {
         if (result.empty) {
             alert('Email or password is wrong!')
         } else {
-            alert('Nice try');
+            router.navigate('/chat');
         }
       }
     };

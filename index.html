@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>ChatApp</title>
     <!-- The core Firebase JS SDK is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.2.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.2.0/firebase-firestore.js"></script>
@@ -25,10 +25,19 @@
       firebase.initializeApp(firebaseConfig);
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js" integrity="sha512-nOQuvD9nKirvxDdvQ9OMqe2dgapbPB7vYAMrzJihw5m+aNcf0dX53m6YxM4LgA9u8e9eg9QX+/+mPu8kCNpV2A==" crossorigin="anonymous"></script>
+    <script src="//unpkg.com/navigo@6"></script>
   </head>
   <body style="background: linear-gradient(to right, #d49668, #74e8d3)">
-    <login-form></login-form>
+    <!-- <input-wrapper></input-wrapper> -->
+    <!-- <login-form></login-form> -->
     <!-- <register-form></register-form> -->
+    <div id="app">
+      <friend-list data='[
+        {"name": "Bchloe"},
+        {"name": "Git2Renald"},
+        {"name": "Mr.Hung"}
+        ]'></friend-list>
+    </div>
     <script src="./JS/app.js" type="module"></script>
   </body>
 </html>
