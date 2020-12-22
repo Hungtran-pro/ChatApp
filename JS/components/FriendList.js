@@ -1,71 +1,70 @@
 import FriendContainer from "./FriendContainer.js";
-import { getDataFromDoc } from "./utils.js";
+import InputWrapper from "./InputWrapper.js";
+import { getCurrentUser, getDataFromDoc, getDataFromDocs } from "../utils.js";
 
 const $template = document.createElement("template");
-
 $template.innerHTML = /*html*/ `
-<style>
+  <style>
   * {
-    font-family: Arial;
+      background-color: #f1f1f2;
   }
-
   #title {
-    padding: 15px 0px;
-    font-family: Arial;
-    font-size: 20px;
-    font-weight: bold;
-    text-align: center;
-    border-bottom: 1px solid #cccccc;
+      padding: 15px 0px;
+      font-family: Arial;
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      border-bottom: 1px solid #cccccc;
   }
-
   #search-friend-form {
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    text-align: center;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #cccccc;
   }
-
   #search-friend-btn {
-    border: 1px #cccccc solid;
-    background-color: #1995ad;
-    padding: 5px 15px;
-    width: 100px;
-    color: #fff;
-    border-radius: 5px;
+      border: 1px solid #1995ad;
+      background-color: #1995ad;
+      height: 40px;
+      width: 100px;
+      color: #fff;
+      border-radius: 5px;
   }
-
   #search-friend-keyword {
-    width: calc(100% - 100px - 15px);
+      width: calc(100% - 100px - 15px);
   }
-</style>
-    <div id=title>
-        Bạn bè
-    </div>
-      <form id="search-friend-form">
-        <input-wrapper id="search-friend-keyword" label="" type="text" error=""></input-wrapper>
-        <button id="search-friend-btn">Search</button>
-      </form>
-
-    <div id="friend-list"></div>
+  </style>
+  <div id=title>
+    Bạn bè
+  </div>
+  <form id="search-friend-form">
+    <input-wrapper id="search-friend-keyword" label="" type="text" error=""></input-wrapper>
+    <button id="search-friend-btn">Tìm kiếm</button>
+  </form>
+  <div id="friend-list"></div>
 `;
 
 export default class FriendList extends HTMLElement {
   constructor(data) {
     super();
+
     this.attachShadow({ mode: "open" });
     this.shadowRoot.appendChild($template.content.cloneNode(true));
-    this.$FriendList = this.shadowRoot.getElementById("friend-list");
+    this.$friendList = this.shadowRoot.getElementById("friend-list");
+
     this.$searchFriendKeyword = this.shadowRoot.getElementById(
       "search-friend-keyword"
     );
     this.$searchFriendForm = this.shadowRoot.getElementById(
       "search-friend-form"
     );
+
     this.setAttribute("data", JSON.stringify(data));
   }
 
   connectedCallback() {
-    this.#searchFriendForm.onsubmit = async (event) => {
+    this.$searchFriendForm.onsubmit = async (event) => {
       event.preventDefault();
 
       let keyword = this.$searchFriendKeyword.value();
@@ -76,27 +75,46 @@ export default class FriendList extends HTMLElement {
         "Nhập vào tên bạn bè"
       );
 
-      if(isPassed) {
+      if (isPassed) {
         let result = await firebase
           .firestore()
-          .collection('users')
-          .where('name', '==', keyword)
+          .collection("users")
+          .where("name", "==", keyword)
           .get();
-        console.log(getDataFromDocs(result.docs));
+        let data = getDataFromDocs(result.docs);
+        // Kiểm tra những người dùng hiện tại có phải là bạn của ng dùng hiện tại hay ko?
+        for (let friendData of data) {
+          let currentUser = getCurrentUser();
+          let result = await firebase
+            .firestore()
+            .collection("friends")
+            .where("relation", "array-contains", friendData.id)
+            .where("relation", "array-contains", currentUser.id)
+            .get();
+
+          console.log(result);
+        }
+
+        this.setAttribute("data", JSON.stringify(data));
       }
     };
   }
 
-  static get observerdAttributes() {
+  static get observedAttributes() {
     return ["data"];
   }
 
-  attributeChangedCallBack(attrName, oldValue, newValue) {
+  attributeChangedCallback(attrName, oldValue, newValue) {
     if (attrName == "data") {
       let friendsData = JSON.parse(newValue);
+      this.$friendList.innerHTML = "";
       for (let friendData of friendsData) {
-        let $friendContainer = new FriendContainer(friendData.name);
-        this.$FriendList.appendChild($friendContainer);
+        let $friendContainer = new FriendContainer(
+          friendData.name,
+          friendData.email,
+          friendData.isFriend
+        );
+        this.$friendList.appendChild($friendContainer);
       }
     }
   }

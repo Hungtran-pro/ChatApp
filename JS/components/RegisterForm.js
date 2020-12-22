@@ -1,18 +1,19 @@
-import inputWrapper from "./InputWrapper.js";
-import { validateEmail } from "../components/utils.js";
+import InputWrapper from "./InputWrapper.js";
+import { validateEmail } from "../utils.js";
 
 const $template = document.createElement("template");
 $template.innerHTML = /*html*/ `
     <link rel="stylesheet" href="./CSS/register-form.css"> 
-    <form id="register-form" action="">
-        <h2>Register here</h2>
-        <input-wrapper id="email" label="Email" type="email" error="" value=""></input-wrapper>
-        <input-wrapper id="name" label="Name" type="text" error="" value=""></input-wrapper>
-        <input-wrapper id="password" label="Password" type="password" error="" value=""></input-wrapper>
-        <input-wrapper id="password-confirmation" label="Re-password" type="password" error="" value=""></input-wrapper>
-        <button id="register-btn">Đăng kí</button>
+    <form id="register-form">
+      <h2>Register here</h2>
+      <input-wrapper id="email" label="Email" type="email" error="" value=""></input-wrapper>
+      <input-wrapper id="name" label="Name" type="text" error="" value=""></input-wrapper>
+      <input-wrapper id="password" label="Password" type="password" error="" value=""></input-wrapper>
+      <input-wrapper id="password-confirmation" label="Confirm password" type="password" error="" value=""></input-wrapper>
+      <button id="register-btn">Đăng kí</button>
 
-        <div id="to-login">Bạn đã có tài khoản <b><a href="#!/sign-in">Sign in</a></b></div>
+      <div id="to-login">Bạn đã có tài khoản? <b><a href="#!/sign-in">Sign in</a></b>
+      </div>
 
     </form>
 `;
@@ -22,6 +23,7 @@ export default class RegisterForm extends HTMLElement {
     super();
     this.attachShadow({ mode: "open" });
     this.shadowRoot.appendChild($template.content.cloneNode(true));
+
     this.$form = this.shadowRoot.getElementById("register-form");
     this.$email = this.shadowRoot.getElementById("email");
     this.$name = this.shadowRoot.getElementById("name");
@@ -46,41 +48,40 @@ export default class RegisterForm extends HTMLElement {
       // else{
       //   this.$email.error('');
       // }
-
       let isPassed =
-        (inputWrapper.validate(
+        (InputWrapper.validate(
           this.$email,
           (value) => {
             return value != "";
           },
           "Email is required"
         ) &&
-          inputWrapper.validate(
+          InputWrapper.validate(
             this.$email,
             (value) => validateEmail(value),
             "Email is wrong!"
           )) &
-        inputWrapper.validate(
+        InputWrapper.validate(
           this.$name,
           (value) => value != "",
           "Name is required"
         ) &
-        inputWrapper.validate(
+        InputWrapper.validate(
           this.$password,
           (value) => value != "",
           "Password is required"
         ) &
-        (inputWrapper.validate(
+        (InputWrapper.validate(
           this.$passwordConfirmation,
           (value) => value != "",
           "Re-Password is required"
         ) &&
-          inputWrapper.validate(
+          InputWrapper.validate(
             this.$passwordConfirmation,
             (value) => value == password,
             "Re-Password is not correct!"
           ));
-      //* console.log(isPassed); Kiểm tra thỏa mãn tất cả điều kiện
+      // console.log(isPassed); Kiểm tra thỏa mãn tất cả điều kiện
       if (isPassed) {
         let result = await firebase
           .firestore()
@@ -88,6 +89,7 @@ export default class RegisterForm extends HTMLElement {
           .where("email", "==", email)
           .get();
         console.log(result);
+
         if (result.empty) {
           firebase
             .firestore()
@@ -98,7 +100,7 @@ export default class RegisterForm extends HTMLElement {
               password: CryptoJS.MD5(password).toString(),
             });
         } else {
-          this.$email.error("Email has been used!");
+          alert("Email has been used!");
         }
       }
     };

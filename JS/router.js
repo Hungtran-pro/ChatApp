@@ -1,5 +1,3 @@
-import RegisterForm from "./components/RegisterForm.js";
-
 var root = null;
 var useHash = true; // Defaults to: false
 var hash = "#!"; // Defaults to: '#'
