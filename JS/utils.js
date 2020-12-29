@@ -3,32 +3,31 @@ export function validateEmail(email) {
   return re.test(String(email).toLowerCase());
 }
 
-//Làm mịn dữ liệu cho 1 document
+// làm mịn dữ liệu cho 1 document
 export function getDataFromDoc(doc, excepts = []) {
   let data = doc.data();
   data.id = doc.id;
   return data;
 }
 
-// Làm mịn dữ liệu cho 1 tập(mảng) documents
-
-export function getDataFromDocs(docs, except = []) {
-  return docs.map(function (doc) {
-    return getDataFromDoc(doc, except);
+// làm mịn dữ liệu cho 1 tập (mảng) documents
+export function getDataFromDocs(docs, excepts = []) {
+  return docs.map(function(doc) {
+      return getDataFromDoc(doc, excepts);
   });
 }
 
-// Lưu thông tin của người dùng hiện tại vào local Storage
+// lưu thông tin người dùng hiện tại vào localStorage
 export function saveCurrentUser(user) {
-  localStorage.setItem("current-user", JSON.stringify(user));
+  localStorage.setItem('current-user', JSON.stringify(user));
 }
 
-// Lấy thông tin của người dùng hiện tại từ local Storage
-export function getCurrentUser(){
+// lấy thông tin người dùng hiện tại từ localStorage
+export function getCurrentUser() {
   let result = localStorage.getItem('current-user');
 
   if(result) {
-    return JSON.parse(result);
+      return JSON.parse(result);
   }
 
   return null;

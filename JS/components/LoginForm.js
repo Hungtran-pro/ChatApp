@@ -1,66 +1,60 @@
 import InputWrapper from "./InputWrapper.js";
-import { getDataFromDoc, saveCurrentUser, validateEmail } from "../utils.js";
+import { validateEmail, saveCurrentUser, getDataFromDoc } from "../utils.js";
 
-const $template = document.createElement("template");
+const $template = document.createElement('template');
 $template.innerHTML = /*html*/ `
-  <link rel="stylesheet" href="./CSS/login-form.css"> 
-  <form id="login-form">
-    <h2>Log in</h2>
-    <input-wrapper id="email" label="Email" type="email" error="" value=""></input-wrapper>
-    <input-wrapper id="password" label="Password" type="password" error="" value=""></input-wrapper>
-    <button id="login-btn">Log in</button>
-    <div id="to-register">Bạn chưa có tài khoả? <b><a href="#!/sign-up">Sign up</a></b>
-    </div>
-  </form>
+    <link rel="stylesheet" href="../../css/login-form.css">
+    <form id="login-form">
+        <h2>Đăng nhập tài khoản</h2>
+        <input-wrapper id="email" label="Email" type="email" error="" value=""></input-wrapper>
+        <input-wrapper id="password" label="Mật khẩu" type="password" error="" value=""></input-wrapper>
+        <button id="login-btn">Đăng nhập</button>
+        <div id="to-register">
+            Bạn chưa có tài khoản? <b><a href="#!/sign-up">Đăng kí</a></b>
+        </div>
+    </form>
 `;
 
 export default class LoginForm extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: "open" });
-    this.shadowRoot.appendChild($template.content.cloneNode(true));
-    this.$form = this.shadowRoot.getElementById("login-form");
-    this.$email = this.shadowRoot.getElementById("email");
-    this.$password = this.shadowRoot.getElementById("password");
-  }
+    constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.appendChild($template.content.cloneNode(true));
+        this.$form = this.shadowRoot.getElementById('login-form');
 
-  connectedCallback() {
-    this.$form.onsubmit = async (event) => {
-      event.preventDefault();
-      console.log("đăng kí");
-      let email = this.$email.value();
-      let password = this.$password.value();
+        this.$email = this.shadowRoot.getElementById('email');
+        this.$password = this.shadowRoot.getElementById('password');
+    }
 
-      let isPassed =
-        InputWrapper.validate(
-          this.$email,
-          (value) => value != "",
-          "Email is required"
-        ) &
-        InputWrapper.validate(
-          this.$password,
-          (value) => value != "",
-          "Password is required"
-        );
-      // console.log(isPassed); Kiểm tra thỏa mãn tất cả điều kiện
-      if (isPassed) {
-        let result = await firebase
-          .firestore()
-          .collection("users")
-          .where("email", "==", email)
-          .where("password", "==", CryptoJS.MD5(password).toString())
-          .get();
+    connectedCallback() {
+        this.$form.onsubmit = async (event) => {
+            event.preventDefault();
+            let email = this.$email.value();
+            let password = this.$password.value();
 
-        if (result.empty) {
-          alert("Email or password is wrong!");
-        } else {
-          console.log(result);
-          saveCurrentUser(getDataFromDoc(result.docs[0]));
-          router.navigate("/chat");
+            let isPassed =
+                InputWrapper.validate(this.$email, (value) => value != '', "Nhập vào email") &
+                InputWrapper.validate(this.$password, (value) => value != '', 'Nhập vào mật khẩu');
+
+            if (isPassed) {
+                let result = await firebase
+                    .firestore()
+                    .collection('users')
+                    .where('email', '==', email)
+                    .where('password', '==', CryptoJS.MD5(password).toString())
+                    .get();
+
+                if(result.empty) {
+                    alert("Email hoặc mật khẩu không chính xác");
+                } else {
+                    console.log(result);
+                    saveCurrentUser(getDataFromDoc(result.docs[0]));
+                    router.navigate('/chat');
+                }
+            }
+
         }
-      }
-    };
-  }
+    }
 }
 
-window.customElements.define("login-form", LoginForm);
+window.customElements.define('login-form', LoginForm);
